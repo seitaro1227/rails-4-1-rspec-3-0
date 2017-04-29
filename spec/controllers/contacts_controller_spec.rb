@@ -1,6 +1,40 @@
 require 'rails_helper'
 
 describe ContactsController do
+
+  shared_examples "public accress to contacrs" do
+    before :each do
+      @contact = create(:contact,
+      firstname: 'Lawrence',
+      lastname: 'Smith',
+      )
+    end
+
+    describe "GET #index" do
+      it 'populates an array of contacts' do
+        get :index
+        expect(assigns(:contacts)).to match_array [@contact]
+      end
+
+      it "renders the :index template" do
+        get :index
+        expect(response).to render_template :index
+      end
+    end
+
+    describe "GET #show" do
+      it 'assigns the requested contact to @contact' do
+        get :show, id: @contact
+        expect(assigns(:contact)).to eq @contact
+      end
+
+      it "renders the :show template" do
+        get :show, id: @contact
+        expect(response).to render_template :show
+      end
+    end
+  end
+
   describe "administrator access" do
     before :each do
       user = create(:admin)
@@ -368,6 +402,7 @@ describe ContactsController do
   describe "guest access" do
     # GET #index and GET #show examples are the same as those for
     # administrators and users
+    it_behaves_like "public accress to contacrs"
 
     describe 'GET #new' do
       it "requires login" do
